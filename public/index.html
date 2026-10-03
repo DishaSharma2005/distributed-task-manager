@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Distributed Task Manager</title>
+  <meta name="description" content="A cloud-native task management application running across multiple EC2 instances behind an AWS Application Load Balancer." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <h1>Distributed Task Manager</h1>
+      </div>
+      <!-- Instance badge — filled by app.js after fetching /api/instance -->
+      <div class="instance-badge" id="instance-badge">
+        <span class="badge-dot" id="badge-dot"></span>
+        <span id="instance-label">Connecting…</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="container">
+
+    <!-- ===== SERVER INFO CARD ===== -->
+    <section class="card server-card" aria-label="Server Information">
+      <div class="card-header">
+        <span class="card-icon">🖥️</span>
+        <h2>Server Information</h2>
+      </div>
+      <div class="server-info-grid">
+        <div class="info-item">
+          <span class="info-label">Current Server</span>
+          <span class="info-value highlight" id="server-instance">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Container Hostname</span>
+          <span class="info-value" id="server-hostname">—</span>
+        </div>
+      </div>
+      <p class="server-note">
+        🔀 Requests are routed by the <strong>AWS Application Load Balancer</strong>.
+        Refresh the page to potentially see a different instance respond — this demonstrates real load balancing.
+      </p>
+    </section>
+
+    <!-- ===== CREATE TASK CARD ===== -->
+    <section class="card" aria-label="Create Task">
+      <div class="card-header">
+        <span class="card-icon">➕</span>
+        <h2>Create New Task</h2>
+      </div>
+      <form id="task-form" novalidate>
+        <div class="form-group">
+          <label for="task-title">Title <span class="required">*</span></label>
+          <input
+            type="text"
+            id="task-title"
+            name="title"
+            placeholder="Enter task title…"
+            maxlength="200"
+            required
+            autocomplete="off"
+          />
+        </div>
+        <div class="form-group">
+          <label for="task-description">Description <span class="optional">(optional)</span></label>
+          <textarea
+            id="task-description"
+            name="description"
+            placeholder="Enter task description…"
+            rows="3"
+            maxlength="1000"
+          ></textarea>
+        </div>
+        <div id="form-error" class="form-error hidden" role="alert"></div>
+        <button type="submit" class="btn btn-primary" id="create-btn">
+          <span class="btn-icon">➕</span> Add Task
+        </button>
+      </form>
+    </section>
+
+    <!-- ===== TASKS LIST CARD ===== -->
+    <section class="card" aria-label="Task List">
+      <div class="card-header">
+        <span class="card-icon">📋</span>
+        <h2>Tasks</h2>
+        <span class="task-count" id="task-count">0</span>
+      </div>
+
+      <div id="tasks-loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading tasks…</p>
+      </div>
+
+      <div id="tasks-empty" class="empty-state hidden">
+        <span class="empty-icon">📭</span>
+        <p>No tasks yet. Create your first task above!</p>
+      </div>
+
+      <ul id="task-list" class="task-list" role="list"></ul>
+    </section>
+
+    <!-- ===== ARCHITECTURE NOTE ===== -->
+    <section class="card architecture-card" aria-label="Architecture Overview">
+      <div class="card-header">
+        <span class="card-icon">🏗️</span>
+        <h2>How This Works</h2>
+      </div>
+      <div class="arch-diagram">
+        <div class="arch-node user-node">🌐 Your Browser</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node alb-node">⚖️ AWS Load Balancer</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-split">
+          <div class="arch-node ec2-node">🐳 EC2 #1<br/><small>Docker Container</small></div>
+          <div class="arch-node ec2-node">🐳 EC2 #2<br/><small>Docker Container</small></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node db-node">🍃 MongoDB Atlas<br/><small>Shared Database</small></div>
+      </div>
+      <p class="arch-note">
+        Both instances share the same MongoDB database, so tasks you create are visible regardless of which instance responds.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
