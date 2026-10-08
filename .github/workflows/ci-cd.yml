@@ -105,7 +105,7 @@ jobs:
             # Pull the latest image from GHCR
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
 
-            docker pull ghcr.io/${{ github.repository }}:latest
+            docker pull ghcr.io/dishasharma2005/distributed-task-manager:latest
 
             # Stop and remove the existing container (ignore error if not running)
             docker stop task-manager || true
@@ -119,7 +119,7 @@ jobs:
               -e PORT=3000 \
               -e INSTANCE_ID=EC2-INSTANCE-1 \
               -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
-              ghcr.io/${{ github.repository }}:latest
+              ghcr.io/dishasharma2005/distributed-task-manager:latest
 
             echo "Deployment to EC2 Instance 1 complete."
 
@@ -143,7 +143,7 @@ jobs:
           script: |
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
 
-            docker pull ghcr.io/${{ github.repository }}:latest
+            docker pull ghcr.io/dishasharma2005/distributed-task-manager:latest
 
             docker stop task-manager || true
             docker rm   task-manager || true
@@ -155,6 +155,6 @@ jobs:
               -e PORT=3000 \
               -e INSTANCE_ID=EC2-INSTANCE-2 \
               -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
-              ghcr.io/${{ github.repository }}:latest
+              ghcr.io/dishasharma2005/distributed-task-manager:latest
 
             echo "Deployment to EC2 Instance 2 complete."
